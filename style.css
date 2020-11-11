@@ -6,3 +6,7 @@ p{
 div{
     border: 1px solid black;
 }
+
+canvas{
+    border: 2px solid blue;
+}
