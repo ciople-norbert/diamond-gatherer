@@ -10,3 +10,9 @@ div{
 canvas{
     border: 2px solid blue;
 }
+
+#myFirstButton{
+    background-color: blue;
+    font-size: 20px;
+    color: red;
+}
