@@ -4,7 +4,7 @@ export class Car{
         this.color = color;
         this.licensePlate = licensePlate;
         this.owner = owner;
-        this.price = price
+        this.price = price;
     }
 
 

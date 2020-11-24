@@ -3,28 +3,24 @@ import { Car } from "./car.js";
 const canvas = document.getElementById('canvasId');
 /** @type {CanvasRenderingContext2D} */
 const context = canvas.getContext('2d');
-
 const george = new Image();
 george.src = './assets/george.png';
-
+const mario = new Image();
+mario.src = 'assets/mario.png'
 const GEORGE_WIDTH = 40;
 const GEORGE_HEIGHT = 45;
-
+const MARIO_WIDTH = 32;
+const MARIO_HEIGHT = 39;
 let georgeX = 100;
 let georgeY = 100;
+let marioX = 0;
+let marioY = 0;
+
 
 george.onload = () => {
     context.drawImage(george, 0 * GEORGE_WIDTH, 0 * GEORGE_HEIGHT, GEORGE_WIDTH, GEORGE_HEIGHT, georgeX, georgeY, GEORGE_WIDTH, GEORGE_HEIGHT);
 }
 
-const mario = new Image();
-mario.src = 'assets/mario.png'
-
-const MARIO_WIDTH = 32;
-const MARIO_HEIGHT = 39;
-
-let marioX = 0;
-let marioY = 0;
 
 mario.onload = () => {
     context.drawImage(mario, 0 * MARIO_WIDTH, 0 * MARIO_HEIGHT, MARIO_WIDTH, MARIO_HEIGHT, marioX, marioY, MARIO_WIDTH, MARIO_HEIGHT)
