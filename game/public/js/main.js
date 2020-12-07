@@ -114,59 +114,11 @@ const context = canvas.getContext('2d');
 
 const socket = io();
 
-document.getElementById('join-chat-button').addEventListener('click', function(){
-    const input = document.getElementById('user-name-input');
-    const color = document.getElementById('color-input').value;
-    const userName = input.value;
-    if (userName.length > 0){
-        document.getElementById('user-name-missing').classList.add('display-none');
-        socket.emit('join-chat', userName, color);
-    } else {
-        document.getElementById('user-name-missing').classList.remove('display-none');
-    }
-});
-
-
-socket.on('join-chat', function(){
-    console.log('You joined the chat!');
-    document.getElementById('join-chat-container').classList.add('display-none');
-    document.getElementById('chat-container').classList.remove('display-none');
-});
-
-document.getElementById('send-message-button').addEventListener('click', function(){
-    const input = document.getElementById('message');
-    const message = input.value;
-    socket.emit('send-message', message);
-    document.getElementById('message').value = '';
-});
-
-socket.on('new-message', function(messageDetails){
-    const messageContainer = document.getElementById('chat-messages');
-    const userNameElement = document.createElement('span');
-    userNameElement.innerHTML = messageDetails['userName'] + ": ";
-    messageContainer.appendChild(userNameElement);
-    const messageElement = document.createElement('span');
-    messageElement.innerHTML = messageDetails['messageText'] + "<br>";
-    messageElement.style.color = messageDetails['messageColor'];
-    messageContainer.appendChild(messageElement);
-});
-
-document.getElementById('leave-chat-button').addEventListener('click', function(){
-    socket.emit('leave-chat');
-});
-
-socket.on('menu', function(){
-    console.log('You left the chat!');
-    document.getElementById('join-chat-container').classList.remove('display-none');
-    document.getElementById('chat-container').classList.add('display-none');
-});
-
 document.getElementById('create-game').addEventListener('click', function(){
     const input = document.getElementById('game-name');
     const gameName = input.value;
     if (gameName.length > 0){
         document.getElementById('game-name-missing').classList.add('display-none');
-        document.getElementById('user-count').classList.add('display-none');
         socket.emit('create-game', gameName);
     } else {
         document.getElementById('game-name-missing').classList.remove('display-none');
@@ -175,8 +127,7 @@ document.getElementById('create-game').addEventListener('click', function(){
 });
 
 socket.on('game-loop', function(objectsForDraw){
-    document.getElementById('join-chat-container').classList.add('display-none');
-    document.getElementById('create-game-container').classList.add('display-none');
+    document.getElementById('menu').classList.add('display-none');
     document.getElementById('game-container').classList.remove('display-none');
     context.drawImage( document.getElementById('map-image'), 0, 0);
 
@@ -188,21 +139,77 @@ socket.on('game-loop', function(objectsForDraw){
     })
 });
 
-socket.on('user-count-update', function(userCount){
-    document.getElementById('user-count').innerHTML = 'Number of users in chat: ' + userCount;
-    console.log(userCount);
-})
+document.addEventListener("keydown", function(event){
+     switch(event.key){
+         case 'ArrowUp' : {
+            socket.emit('start-moving-player', 'up');
+            break;
+         }
+         case 'ArrowDown' : {
+            socket.emit('start-moving-player', 'down');
+            break;
+         }        
+         case 'ArrowLeft' : {
+            socket.emit('start-moving-player', 'left');
+            break;
+         }
+         case 'ArrowRight' : {
+            socket.emit('start-moving-player', 'right');
+            break;
+         }
+    }
+});
 
-socket.on('new-user', function(userName){
-    const messageContainer = document.getElementById('chat-messages');
-    const newUserMessage = document.createElement('p');
-    newUserMessage.innerHTML = `User ${userName} has joined the chat`;
-    messageContainer.appendChild(newUserMessage);
-})
+document.addEventListener('keyup', function(event){
+    switch(event.key){
+        case 'ArrowUp' :
+        case 'ArrowDown' : {
+           socket.emit('stop-moving-player', 'dy');
+           break;
+        }        
+        case 'ArrowLeft' : 
+        case 'ArrowRight' : {
+           socket.emit('stop-moving-player', 'dx');
+           break;
+        }
+   }
+});
 
-socket.on('user-left', function(userName){
-    const messageContainer = document.getElementById('chat-messages');
-    const userLeftMessage = document.createElement('p');
-    userLeftMessage.innerHTML = `User ${userName} has left the chat`;
-    messageContainer.appendChild(userLeftMessage);
-})
+socket.on('add-game-to-list', function(options){
+    const gameElementContainer = document.createElement('div');
+    gameElementContainer.classList.add('game-element');
+    gameElementContainer.id = options.gameId;
+    
+    const gameNameElement = document.createElement('p');
+    gameNameElement.innerHTML = options.gameName;
+    const joinGameButton = document.createElement('button');
+    joinGameButton.innerHTML = 'Join Game';
+
+    joinGameButton.addEventListener('click', function(){
+        socket.emit('join-game', options.gameId);
+    })
+
+    gameElementContainer.appendChild(gameNameElement);
+    gameElementContainer.appendChild(joinGameButton);
+
+    document.getElementById('game-list').appendChild(gameElementContainer);
+});
+
+socket.on('remove-game-from-list', function(gameId){
+    console.log('rm ' + gameId);
+    document.getElementById(gameId).classList.add('display-none');
+});
+
+socket.on('game-over', function(reason){
+    console.log('Game over ' + reason);
+    context.font = "50px Arial";
+    context.fillStyle = "red";
+    context.textAlign = "center";
+    context.fillText(`Game over: ${reason}`, canvas.width/2, canvas.height/2);
+});
+
+document.getElementById('back-to-menu-button').addEventListener('click', function(){
+    socket.emit('user-left-game');
+    document.getElementById('menu').classList.remove('display-none');
+    document.getElementById('game-container').classList.add('display-none')
+});
