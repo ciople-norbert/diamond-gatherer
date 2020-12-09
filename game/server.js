@@ -67,6 +67,7 @@ io.on('connection', function(socket){               //Event care asculta la fiec
     socket.on('user-left-game', function(){
         console.log('[USER LEFT GAME]' + socket.id);
         if (players[socket.id]){
+            console.log('qqq');
             const gameId = players[socket.id].gameId;                                   
             const game = games[gameId];
             const playersToRemoveIds = game.players.map(function (player){
@@ -79,6 +80,7 @@ io.on('connection', function(socket){               //Event care asculta la fiec
             })
             io.to(gameId).emit('game-over', 'A player left the game');
             io.to('menu').emit('remove-game-from-list', gameId);
+            //socket.emit('remove-game-from-list', gameId);
         }
     });
 
