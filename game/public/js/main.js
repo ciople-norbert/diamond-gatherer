@@ -197,7 +197,6 @@ socket.on('add-game-to-list', function(options){
 
 socket.on('remove-game-from-list', function(gameId){
     console.log('rm ' + gameId);
-    //document.getElementById(gameId).classList.add('display-none');
     var toDelete = document.getElementById(gameId);
     toDelete.parentNode.removeChild(toDelete);
 });
