@@ -1,34 +1,34 @@
 <html>
-    
-    <head>
-        <link rel="stylesheet" href="css/style.css">
-        <script src="/socket.io/socket.io.js" type="module"></script>
-        <script src="js/main.js" type="module"></script>
-    </head>
-        
-    <body>
-        <!--<canvas id="canvasId" width="600px" height="400px"></canvas>-->
-        <img id='map-image' src='assets/map.png' class="display-none"/>
-        <img id='space-ranger' src='assets/space-ranger-player.png' class='display-none'/>
-        <img id='pink-lady' src='assets/pink-lady-player.png' class='display-none'/>
 
-        <div id = 'menu'>
-            <div id='create-game-container'>
-                <input id='game-name' type='text', placeholder="Enter the name of the game"/>
-                <button id='create-game'>Create game!</button>
-                <p id='game-name-missing' class='display-none'>Please enter a game name to create one!</p>
-            </div>
-            <div id = 'game-list'>
+<head>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="/socket.io/socket.io.js" type="module"></script>
+    <script src="js/main.js" type="module"></script>
+</head>
 
-            </div>
+<body>
+    <!--<canvas id="canvasId" width="600px" height="400px"></canvas>-->
+    <img id='map-image' src='assets/map.png' class="display-none" />
+    <img id='space-ranger' src='assets/space-ranger-player.png' class='display-none' />
+    <img id='pink-lady' src='assets/pink-lady-player.png' class='display-none' />
+
+    <div id='menu'>
+        <div id='create-game-container'>
+            <input id='game-name' type='text' , placeholder="Enter the name of the game" />
+            <button id='create-game'>Create game!</button>
+            <p id='game-name-missing' class='display-none'>Please enter a game name to create one!</p>
         </div>
-       
-        <div id = 'game-container' class='display-none'>
-            <canvas id='game-canvas' width='960' height="640"></canvas>
-            <br>
-            <button id='back-to-menu-button'>Back to menu!</button>
+        <div id='game-list'>
+
         </div>
-        
-    </body>
+    </div>
+
+    <div id='game-container' class='display-none'>
+        <canvas id='game-canvas' width='960' height="640"></canvas>
+        <br>
+        <button id='back-to-menu-button'>Back to menu!</button>
+    </div>
+
+</body>
 
 </html>

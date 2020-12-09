@@ -1,7 +1,7 @@
 const Player = require("./player");
 
-class SpaceRanger extends Player{
-    constructor(options){
+class SpaceRanger extends Player {
+    constructor(options) {
         super(options);
         this.x = 80;
         this.y = 127;

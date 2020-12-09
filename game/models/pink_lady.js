@@ -1,7 +1,7 @@
 const Player = require("./player");
 
-class PinkLady extends Player{
-    constructor(options){
+class PinkLady extends Player {
+    constructor(options) {
         super(options);
         this.x = 834;
         this.y = 551;

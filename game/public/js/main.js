@@ -78,7 +78,7 @@ const context = canvas.getContext('2d');
 //             }
 //             break;
 //         }
-            
+
 //     }
 //     context.drawImage(mario, 0 * MARIO_WIDTH, 0 * MARIO_HEIGHT, MARIO_WIDTH, MARIO_HEIGHT, marioX, marioY, MARIO_WIDTH, MARIO_HEIGHT)
 //     context.drawImage(george, 0 * GEORGE_WIDTH, 0 * GEORGE_HEIGHT, GEORGE_WIDTH, GEORGE_HEIGHT, georgeX, georgeY, GEORGE_WIDTH, GEORGE_HEIGHT);
@@ -114,10 +114,10 @@ const context = canvas.getContext('2d');
 
 const socket = io();
 
-document.getElementById('create-game').addEventListener('click', function(){
+document.getElementById('create-game').addEventListener('click', function () {
     const input = document.getElementById('game-name');
     const gameName = input.value;
-    if (gameName.length > 0){
+    if (gameName.length > 0) {
         document.getElementById('game-name-missing').classList.add('display-none');
         socket.emit('create-game', gameName);
     } else {
@@ -126,12 +126,12 @@ document.getElementById('create-game').addEventListener('click', function(){
     console.log(socket.id);
 });
 
-socket.on('game-loop', function(objectsForDraw){
+socket.on('game-loop', function (objectsForDraw) {
     document.getElementById('menu').classList.add('display-none');
     document.getElementById('game-container').classList.remove('display-none');
-    context.drawImage( document.getElementById('map-image'), 0, 0);
+    context.drawImage(document.getElementById('map-image'), 0, 0);
 
-    objectsForDraw.forEach(function(objectForDraw){
+    objectsForDraw.forEach(function (objectForDraw) {
         context.drawImage(
             document.getElementById(objectForDraw.imageId),
             ...objectForDraw.drawImageParameters
@@ -139,53 +139,53 @@ socket.on('game-loop', function(objectsForDraw){
     })
 });
 
-document.addEventListener("keydown", function(event){
-     switch(event.key){
-         case 'ArrowUp' : {
+document.addEventListener("keydown", function (event) {
+    switch (event.key) {
+        case 'ArrowUp': {
             socket.emit('start-moving-player', 'up');
             break;
-         }
-         case 'ArrowDown' : {
+        }
+        case 'ArrowDown': {
             socket.emit('start-moving-player', 'down');
             break;
-         }        
-         case 'ArrowLeft' : {
+        }
+        case 'ArrowLeft': {
             socket.emit('start-moving-player', 'left');
             break;
-         }
-         case 'ArrowRight' : {
+        }
+        case 'ArrowRight': {
             socket.emit('start-moving-player', 'right');
             break;
-         }
+        }
     }
 });
 
-document.addEventListener('keyup', function(event){
-    switch(event.key){
-        case 'ArrowUp' :
-        case 'ArrowDown' : {
-           socket.emit('stop-moving-player', 'dy');
-           break;
-        }        
-        case 'ArrowLeft' : 
-        case 'ArrowRight' : {
-           socket.emit('stop-moving-player', 'dx');
-           break;
+document.addEventListener('keyup', function (event) {
+    switch (event.key) {
+        case 'ArrowUp':
+        case 'ArrowDown': {
+            socket.emit('stop-moving-player', 'dy');
+            break;
         }
-   }
+        case 'ArrowLeft':
+        case 'ArrowRight': {
+            socket.emit('stop-moving-player', 'dx');
+            break;
+        }
+    }
 });
 
-socket.on('add-game-to-list', function(options){
+socket.on('add-game-to-list', function (options) {
     const gameElementContainer = document.createElement('div');
     gameElementContainer.classList.add('game-element');
     gameElementContainer.id = options.gameId;
-    
+
     const gameNameElement = document.createElement('p');
     gameNameElement.innerHTML = options.gameName;
     const joinGameButton = document.createElement('button');
     joinGameButton.innerHTML = 'Join Game';
 
-    joinGameButton.addEventListener('click', function(){
+    joinGameButton.addEventListener('click', function () {
         socket.emit('join-game', options.gameId);
     })
 
@@ -195,21 +195,21 @@ socket.on('add-game-to-list', function(options){
     document.getElementById('game-list').appendChild(gameElementContainer);
 });
 
-socket.on('remove-game-from-list', function(gameId){
+socket.on('remove-game-from-list', function (gameId) {
     console.log('rm ' + gameId);
     var toDelete = document.getElementById(gameId);
     toDelete.parentNode.removeChild(toDelete);
 });
 
-socket.on('game-over', function(reason){
+socket.on('game-over', function (reason) {
     console.log('Game over ' + reason);
     context.font = "50px Arial";
     context.fillStyle = "red";
     context.textAlign = "center";
-    context.fillText(`Game over: ${reason}`, canvas.width/2, canvas.height/2);
+    context.fillText(`Game over: ${reason}`, canvas.width / 2, canvas.height / 2);
 });
 
-document.getElementById('back-to-menu-button').addEventListener('click', function(){
+document.getElementById('back-to-menu-button').addEventListener('click', function () {
     socket.emit('user-left-game');
     document.getElementById('menu').classList.remove('display-none');
     document.getElementById('game-container').classList.add('display-none')
