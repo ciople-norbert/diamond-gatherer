@@ -67,7 +67,6 @@ io.on('connection', function (socket) {               //Event care asculta la fi
     socket.on('user-left-game', function () {
         console.log('[USER LEFT GAME]' + socket.id);
         if (players[socket.id]) {
-            console.log('qqq');
             const gameId = players[socket.id].gameId;
             const game = games[gameId];
             const playersToRemoveIds = game.players.map(function (player) {

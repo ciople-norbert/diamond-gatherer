@@ -198,7 +198,9 @@ socket.on('add-game-to-list', function (options) {
 socket.on('remove-game-from-list', function (gameId) {
     console.log('rm ' + gameId);
     var toDelete = document.getElementById(gameId);
-    toDelete.parentNode.removeChild(toDelete);
+    if (toDelete) {
+        toDelete.parentNode.removeChild(toDelete);
+    }
 });
 
 socket.on('game-over', function (reason) {
