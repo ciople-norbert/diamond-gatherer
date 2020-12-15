@@ -1,6 +1,7 @@
 const SpaceRanger = require('./models/space_ranger.js');
 const PinkLady = require('./models/pink_lady.js');
 const Game = require('./models/game.js');
+const Bullet = require('./models/bullet.js')
 
 const express = require('express');                   //Import librarie 'express' (web server)
 const { clearInterval } = require('timers');
@@ -47,12 +48,18 @@ io.on('connection', function (socket) {               //Event care asculta la fi
 
     socket.on('start-moving-player', function (direction) {
         if (players[socket.id]) {
+            if (games[players[socket.id].gameId].players.length != 2) {
+                return;
+            }
             players[socket.id].startMoving(direction);
         }
     });
 
     socket.on('stop-moving-player', function (axis) {
         if (players[socket.id]) {
+            if (games[players[socket.id].gameId].players.length != 2) {
+                return;
+            }
             players[socket.id].stopMoving(axis);
         }
     });
@@ -60,8 +67,25 @@ io.on('connection', function (socket) {               //Event care asculta la fi
     socket.on('join-game', function (gameId) {
         players[socket.id] = new PinkLady({ gameId: gameId, socketId: socket.id });
         games[gameId].players.push(players[socket.id]);
+        games[gameId].generateDiamonds();
         socket.join(gameId);
         io.to('menu').emit('remove-game-from-list', gameId);
+    });
+
+    socket.on('attack', function (gameId) {
+        if (players[socket.id]) {
+            if (games[players[socket.id].gameId].players.length != 2) {
+                return;
+            }
+            if (players[socket.id].hasActiveBullet) {
+                return;
+            }
+            console.log('ATTACK');
+            const game = games[players[socket.id].gameId];
+            game.bullets.push(new Bullet(players[socket.id]));
+
+        }
+
     });
 
     socket.on('user-left-game', function () {
@@ -77,7 +101,7 @@ io.on('connection', function (socket) {               //Event care asculta la fi
             playersToRemoveIds.forEach(function (playerToRemove) {
                 delete players[playerToRemove];
             })
-            io.to(gameId).emit('game-over', 'A player left the game');
+            io.to(gameId).emit('game-over', 'player-disconnected');
             io.to('menu').emit('remove-game-from-list', gameId);
         }
     });
@@ -95,24 +119,61 @@ io.on('connection', function (socket) {               //Event care asculta la fi
             playersToRemoveIds.forEach(function (playerToRemove) {
                 delete players[playerToRemove];
             })
-            io.to(gameId).emit('game-over', 'A player disconnected');
+            io.to(gameId).emit('game-over', 'player-disconnected');
             io.to('menu').emit('remove-game-from-list', gameId);
         }
     });
+
 });
 
-function gameLoop(id) {
-    if (games[id]) {
-        games[id].update();
-        const objectsForDraw = [];
-        games[id].players.forEach(function (player) {
-            objectsForDraw.push(player.forDraw());
-        })
-        io.to(id).emit('game-loop', objectsForDraw);
+function gameLoop(roomId) {
+    const game = games[roomId];
+    if (game) {
+        game.update();
+
+        if (game.over) {
+            const playersToRemoveIds = game.players.map(function (player) {
+                return player.socketId;
+            })
+            clearInterval(game.gameInterval);
+            delete games[roomId];
+            playersToRemoveIds.forEach(function (playerToRemove) {
+                delete players[playerToRemove];
+            })
+            io.to(roomId).emit('game-over', game.winner + '-won');
+            io.to('menu').emit('remove-game-from-list', roomId);
+        } else {
+
+            const objectsForDraw = [];
+            game.players.forEach(function (player) {
+                objectsForDraw.push(player.forDraw());
+            })
+            game.diamonds.forEach(function (diamond) {
+                objectsForDraw.push(diamond.forDraw());
+            })
+            game.bullets.forEach(function (bullet) {
+                objectsForDraw.push(bullet.forDraw());
+            })
+            const data = {
+                objectsForDraw: objectsForDraw,
+                gameInProgress: game.players.length == 2,
+                game: game
+            }
+            if (data.gameInProgress) {
+                data.score = {
+                    'space-ranger': game.players[0].score,
+                    'pink-lady': game.players[1].score
+                }
+            }
+            io.to(roomId).emit('game-loop', data);
+        }
+
     }
 }
 
 const games = {};
 const players = {};
+const bullets = {};
 
 module.exports.gameLoop = gameLoop;
+module.exports.games = games;

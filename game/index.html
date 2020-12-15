@@ -11,6 +11,14 @@
     <img id='map-image' src='assets/map.png' class="display-none" />
     <img id='space-ranger' src='assets/space-ranger-player.png' class='display-none' />
     <img id='pink-lady' src='assets/pink-lady-player.png' class='display-none' />
+    <img id='player-disconnected' src='assets/player-disconnected.png' class='display-none' />
+    <img id='diamond' src='assets/diamond.png' class='display-none' />
+    <img id='space-ranger-with-diamond' src='assets/space-ranger-player-with-diamond.png' class='display-none' />
+    <img id='pink-lady-with-diamond' src='assets/pink-lady-player-with-diamond.png' class='display-none' />
+    <img id='space-ranger-won' src='assets/space-ranger-won.png' class='display-none' />
+    <img id='pink-lady-won' src='assets/pink-lady-won.png' class='display-none' />
+    <img id='space-ranger-bullet' src='assets/space-ranger-bullet.png' class='display-none' />
+    <img id='pink-lady-bullet' src='assets/pink-lady-bullet.png' class='display-none' />
 
     <div id='menu'>
         <div id='create-game-container'>
@@ -27,6 +35,12 @@
         <canvas id='game-canvas' width='960' height="640"></canvas>
         <br>
         <button id='back-to-menu-button'>Back to menu!</button>
+        <p id='waiting-for-player'>Waiting for second player! You cannot move!</p>
+        <div id='score-container' class="display-none">
+            <p>Space Ranger has <span id='space-ranger-score'>0</span> diamonds</p>
+            <p>Pink Lady has <span id='pink-lady-score'>0</span> diamonds</p>
+            <p>Total diamonds left: <span id='diamonds-left'>3</span></p>
+        </div>
     </div>
 
 </body>

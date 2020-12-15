@@ -126,17 +126,28 @@ document.getElementById('create-game').addEventListener('click', function () {
     console.log(socket.id);
 });
 
-socket.on('game-loop', function (objectsForDraw) {
+socket.on('game-loop', function (data) {
     document.getElementById('menu').classList.add('display-none');
     document.getElementById('game-container').classList.remove('display-none');
     context.drawImage(document.getElementById('map-image'), 0, 0);
 
-    objectsForDraw.forEach(function (objectForDraw) {
+    data.objectsForDraw.forEach(function (objectForDraw) {
         context.drawImage(
             document.getElementById(objectForDraw.imageId),
             ...objectForDraw.drawImageParameters
         )
-    })
+    });
+
+    if (data.gameInProgress) {
+        document.getElementById('waiting-for-player').classList.add('display-none');
+        document.getElementById('score-container').classList.remove('display-none');
+        document.getElementById('space-ranger-score').innerHTML = data.score['space-ranger'];
+        document.getElementById('pink-lady-score').innerHTML = data.score['pink-lady'];
+        document.getElementById('diamonds-left').innerHTML = data.game.totalDiamonds - data.score['space-ranger'] - data.score['pink-lady'];
+    } else {
+        document.getElementById('waiting-for-player').classList.remove('display-none');
+        document.getElementById('score-container').classList.add('display-none');
+    }
 });
 
 document.addEventListener("keydown", function (event) {
@@ -155,6 +166,10 @@ document.addEventListener("keydown", function (event) {
         }
         case 'ArrowRight': {
             socket.emit('start-moving-player', 'right');
+            break;
+        }
+        case ' ': {
+            socket.emit('attack');
             break;
         }
     }
@@ -203,12 +218,10 @@ socket.on('remove-game-from-list', function (gameId) {
     }
 });
 
-socket.on('game-over', function (reason) {
-    console.log('Game over ' + reason);
-    context.font = "50px Arial";
-    context.fillStyle = "red";
-    context.textAlign = "center";
-    context.fillText(`Game over: ${reason}`, canvas.width / 2, canvas.height / 2);
+socket.on('game-over', function (imageId) {
+    //console.log('Game over ' + reason);
+    context.drawImage(document.getElementById(imageId), 0, 0);
+    document.getElementById('score-container').classList.add('display-none');
 });
 
 document.getElementById('back-to-menu-button').addEventListener('click', function () {
